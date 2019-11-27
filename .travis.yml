@@ -10,11 +10,19 @@ script:
   - mvn --settings .travis/settings.xml clean verify -B -V
 
 deploy:
-  -
+  # Deployment to maven-central, active only on tags like v1.0.0
+  - provider: script
     skip_cleanup: true
-    provider: script
     script: /bin/bash .travis/deploy.sh
     on:
       tags: true
       condition: "$TRAVIS_TAG =~ ^v([[:digit:]]+\\.)+[[:digit:]]+(-[[:digit:]]+)?(-SNAPSHOT)?$"
       jdk: openjdk8
+
+  # Coverage upload:
+  - provider: script
+    skip_cleanup: true
+    script: /bin/bash .travis/codecov_bash.sh
+    on:
+      jdk: openjdk8
+      all_branches: true
